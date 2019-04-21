@@ -10,7 +10,6 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^0.18.0",
-    "stockfish": "^10.0.0",
-    "uci": "^0.3.4"
+    "stockfish": "^10.0.0"
   }
 }
