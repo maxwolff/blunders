@@ -10,8 +10,8 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^0.18.0",
+    "chess.js": "^0.10.2",
     "kokopu": "^1.2.4",
-    "pgn-parser": "0.0.9",
     "stockfish": "^10.0.0"
   }
 }
