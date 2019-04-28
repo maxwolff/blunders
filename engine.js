@@ -1,12 +1,42 @@
 const stockfish = require('./node_modules/stockfish/src/stockfish.asm.js');
 const engine = stockfish();
 
-let cp; // game score, in centipawns.
+let currCP; // game score, in centipawns.
+
+let toPlayMoves = ['d2d4', 'e7e5'];
+let playedMoves = [];
+let cpArr = [];
+const ponderTime = 10;
 
 function send(str) {
   console.log('Sending: ' + str);
   engine.postMessage(str);
 }
+
+const getNextMoveString = (played, toPlay) => {
+  const moves = played.concat(toPlay[played.length]);
+  return moves.join(' ');
+};
+
+const ponderNext = (played, toPlay) => {
+  let playedTemp = played;
+  cpArr = toPlay.reduce((arr, curr, idx, src) => {
+    const movesStr = getNextMoveString(playedTemp, toPlay);
+    console.log(movesStr);
+    send('position ' + 'startpos moves ' + movesStr);
+    send('go ponder');
+    setTimeout(function() {
+      send('stop');
+      const cp = Number(currCP) / 100;
+      cpArr.push(cp);
+    }, 1000 * ponderTime);
+    playedTemp[playedTemp.length] = toPlay[playedTemp.length];
+    return cpArr;
+  }, []);
+
+  send('quit');
+  console.log(cpArr);
+};
 
 engine.onmessage = function onmessage(event) {
   console.log(event);
@@ -15,16 +45,11 @@ engine.onmessage = function onmessage(event) {
     send('isready');
   }
   if (event == 'readyok') {
-    send('position ' + 'startpos moves ' + 'e2e4 e7e5 f1a6');
-    send('go ponder');
-    setTimeout(function() {
-      send('stop');
-      console.log(Number(cp) / 100);
-    }, 1000 * 1);
+    ponderNext(playedMoves, toPlayMoves);
   }
   const responseArr = event.split(' ');
   if (responseArr[0] == 'info') {
-    cp = responseArr[9];
+    currCP = responseArr[9]; // TODO: get 'best move' event instead
   }
 };
 

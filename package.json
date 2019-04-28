@@ -10,6 +10,8 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^0.18.0",
+    "kokopu": "^1.2.4",
+    "pgn-parser": "0.0.9",
     "stockfish": "^10.0.0"
   }
 }
